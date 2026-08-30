@@ -3,185 +3,1141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Podróże po Świecie</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SYSTEM MISSION & STATS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Consolas', monospace;
+        }
+        body {
+            background-color: #1a1c23;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+        .bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #181a20;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #262832;
+            border-bottom: 2px solid #ff4b4b;
+        }
+        .gear-btn {
+            background: #373a46;
+            border: 1px solid #ffffff;
+            color: #ffb100;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        .gear-btn:hover {
+            background: #ffb100;
+            color: #0f1015;
+        }
+        .container {
+            flex: 1;
+            padding: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .view.active {
+            display: flex;
+        }
+        .card {
+            background: #262832;
+            border: 2px solid #ff4b4b;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 4px 4px 0px #0f1015;
+            position: relative;
+        }
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .avatar-box {
+            width: 70px;
+            height: 70px;
+            background: #0f1015;
+            border: 2px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        .avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .player-info {
+            flex: 1;
+        }
+        .player-name-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .player-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .edit-btn {
+            background: none;
+            border: none;
+            color: #ffb100;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff4b4b;
+            color: #ffffff;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid #ffffff;
+            border-radius: 3px;
+        }
+        .badge.gold {
+            background: #ffb100;
+            color: #0f1015;
+        }
+        .xp-bar-container {
+            width: 100%;
+            background: #0f1015;
+            border: 1px solid #ffffff;
+            height: 12px;
+            position: relative;
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        .xp-bar-fill {
+            background: #0096ff;
+            height: 100%;
+            width: 0%;
+        }
+        .xp-text {
+            font-size: 0.7rem;
+            color: #0096ff;
+            text-align: right;
+            margin-top: 2px;
+            font-weight: bold;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        .stat-card {
+            background: #262832;
+            border: 2px solid;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 3px 3px 0px #0f1015;
+            text-align: center;
+        }
+        .stat-header {
+            width: 100%;
+            padding: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 8px;
+            border-radius: 2px;
+        }
+        .stat-icon {
+            font-size: 1.8rem;
+            margin: 5px 0;
+            background: #0f1015;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid;
+            border-radius: 50%;
+        }
+        .stat-lvl {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .stat-xp-bar {
+            width: 100%;
+            background: #0f1015;
+            border: 1px solid #ffffff;
+            height: 6px;
+            margin: 5px 0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .stat-xp-fill {
+            height: 100%;
+        }
+        .stat-xp-text {
+            font-size: 0.65rem;
+            color: #8c90a0;
+        }
+        .table-card {
+            background: #1e2029;
+            border: 2px solid #0096ff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 4px 4px 0px #0f1015;
+        }
+        .table-title {
+            color: #0096ff;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quest-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #262832;
+            border-left: 4px solid #0096ff;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            gap: 10px;
+        }
+        .quest-info {
+            flex: 1;
+        }
+        .quest-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .quest-desc {
+            font-size: 0.75rem;
+            color: #8c90a0;
+            margin-top: 2px;
+        }
+        .quest-btn {
+            background: #373a46;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .quest-btn.done {
+            background: #4bc285;
+            color: #0f1015;
+            border-color: #4bc285;
+        }
+        .logs-box {
+            background: #1e2029;
+            border: 2px solid #0096ff;
+            border-radius: 8px;
+            padding: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .log-line {
+            color: #8c90a0;
+        }
+        .log-line.important {
+            color: #ffb100;
+            font-weight: bold;
+        }
+        .tabs-row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .tab-btn {
+            background: #262832;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: #0096ff;
+        }
+        nav.dock {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #1e2029;
+            border-top: 2px solid #ff4b4b;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        .dock-btn {
+            background: none;
+            border: none;
+            color: #8c90a0;
+            font-size: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+        }
+        .dock-btn span {
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+        .dock-btn.active {
+            color: #ff4b4b;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #1a1c23;
+            border: 2px solid #ffb100;
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .modal-content input {
+            background: #0f1015;
+            border: 1px solid #ffb100;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 4px;
+        }
+        .modal-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .btn {
+            background: #ffb100;
+            color: #0f1015;
+            border: none;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-cancel {
+            background: #373a46;
+            color: #ffffff;
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 900px;
+            }
+        }
+    </style>
 </head>
 <body>
+
+    <div class="bg-canvas"></div>
+
     <header>
-        <div class="container">
-            <h1>Podróże po Świecie</h1>
-            <nav>
-                <ul>
-                    <li><a href="#home">Strona główna</a></li>
-                    <li><a href="#about">O nas</a></li>
-                    <li><a href="#gallery">Galeria</a></li>
-                    <li><a href="#destinations">Destynacje</a></li>
-                    <li><a href="#contact">Kontakt</a></li>
-                </ul>
-            </nav>
-        </div>
+        <span style="font-weight: bold; color: #ffb100; font-size: 0.95rem;">SYSTEM MISSION & STATS</span>
+        <button class="gear-btn" onclick="switchView('shop')">SKLEP 🛒</button>
     </header>
 
-    <main>
-        <section id="home" class="hero">
-            <div class="container">
-                <h2>Odkryj piękno świata</h2>
-                <p>Znajdź swoje wymarzone wakacje z nami</p>
-                <a href="#destinations" class="btn">Sprawdź oferty</a>
-            </div>
-        </section>
-
-        <section id="about" class="about">
-            <div class="container">
-                <h2>O nas</h2>
-                <p>Jesteśmy zespołem pasjonatów podróży, którzy od lat pomagają ludziom odkrywać najpiękniejsze zakątki świata.</p>
-                
-                <h3>Dlaczego warto z nami podróżować?</h3>
-                <ul class="benefits-list">
-                    <li>Ponad 15 lat doświadczenia</li>
-                    <li>Lokalni przewodnicy</li>
-                    <li>Autorskie trasy</li>
-                    <li>Małe grupy</li>
-                    <li>Ekologiczne podejście</li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="gallery" class="gallery">
-            <div class="container">
-                <h2>Nasza galeria</h2>
-                <div class="gallery-container">
-                    <div class="gallery-item">
-                        <img src="shutterstock_710380270wiezaeifflaisekwanaparyzfrancja-min-scaled.webp" alt="Paryż">
-                        <p>Paryż, Francja</p>
+    <div class="container">
+        <!-- WIDOK 1: PROFIL I STATYSTYKI -->
+        <div id="view-stats" class="view active">
+            <div class="card profile-section">
+                <div class="profile-header">
+                    <div class="avatar-box" onclick="triggerAvatarUpload()">
+                        <span id="avatar-icon" style="font-size: 2rem; color: #ff4b4b;">👤</span>
+                        <img id="avatar-img" style="display: none;" alt="Avatar">
                     </div>
-                    <div class="gallery-item">
-                        <img src="360_F_498231018_6w6Zt0h2PdU4Muy5Tvph2VeNG67yTuwl.jpg" alt="Tokio">
-                        <p>Tokio, Japonia</p>
-                    </div>
-                    <div class="gallery-item">
-                        <img src="rzym-wielkanoc-log-2.webp" alt="Rzym">
-                        <p>Rzym, Włochy</p>
-                    </div>
-                    <div class="gallery-item">
-                        <img src="Statua-1124.jpg" alt="Nowy Jork">
-                        <p>Nowy Jork, USA</p>
-                    </div>
-                    <div class="gallery-item">
-                        <img src="swiatynia-pura-ulun-danu-beratan-1001748466-570-428.webp" alt="Bali">
-                        <p>Bali, Indonezja</p>
-                    </div>
-                    <div class="gallery-item">
-                        <img src="Sydney_Opera_House_-_Dec_2008.jpg" alt="Sydney">
-                        <p>Sydney, Australia</p>
+                    <input type="file" id="avatar-input" style="display: none;" accept="image/*" onchange="handleAvatarUpload(event)">
+                    
+                    <div class="player-info">
+                        <div class="player-name-row">
+                            <span id="player-name-display" class="player-name">HERO PLAYER</span>
+                            <button class="edit-btn" onclick="openNameModal()">✏</button>
+                        </div>
+                        <div class="badges">
+                            <span id="badge-level" class="badge">POZIOM 1</span>
+                            <span id="badge-gold" class="badge gold">0 $</span>
+                        </div>
+                        <div class="xp-bar-container">
+                            <div id="player-xp-fill" class="xp-bar-fill"></div>
+                        </div>
+                        <div id="player-xp-text" class="xp-text">0/300 EXP</div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section id="destinations" class="destinations">
-            <div class="container">
-                <h2>Popularne destynacje</h2>
-                <div class="destination-container">
-                    <div class="card">
-                        <img src="ooeoeooe.jpg" alt="Włochy">
-                        <h3>Włochy</h3>
-                        <p>Odkryj bogatą historię, wspaniałą kuchnię i piękne krajobrazy Włoch.</p>
-                        <a href="#" class="btn-small">Zobacz więcej</a>
-                    </div>
-                    <div class="card">
-                        <img src="niema.jpg" alt="Japonia">
-                        <h3>Japonia</h3>
-                        <p>Poznaj połączenie tradycji i nowoczesności w fascynującej Japonii.</p>
-                        <a href="#" class="btn-small">Zobacz więcej</a>
-                    </div>
-                    <div class="card">
-                        <img src="download.jpg" alt="Peru">
-                        <h3>Peru</h3>
-                        <p>Odwiedź Machu Picchu i odkryj tajemnice Inków w peruwiańskich Andach.</p>
-                        <a href="#" class="btn-small">Zobacz więcej</a>
-                    </div>
+            <div class="table-card">
+                <div class="table-title">
+                    <span>[ LOGI SYSTEMOWE ]</span>
+                    <button class="tab-btn" onclick="toggleLogsFilter()" id="logs-filter-btn">Wszystkie</button>
                 </div>
-
-                <h3>Ceny wycieczek</h3>
-                <table class="pricing-table">
-                    <thead>
-                        <tr>
-                            <th>Destynacja</th>
-                            <th>Czas trwania</th>
-                            <th>Cena od</th>
-                            <th>Terminy</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Włochy - Rzym, Florencja, Wenecja</td>
-                            <td>10 dni</td>
-                            <td>4 500 zł</td>
-                            <td>maj - październik</td>
-                        </tr>
-                        <tr>
-                            <td>Japonia - Tokio, Kioto, Osaka</td>
-                            <td>14 dni</td>
-                            <td>12 000 zł</td>
-                            <td>kwiecień, listopad</td>
-                        </tr>
-                        <tr>
-                            <td>Peru - Lima, Cusco, Machu Picchu</td>
-                            <td>12 dni</td>
-                            <td>8 200 zł</td>
-                            <td>czerwiec - wrzesień</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div id="logs-box" class="logs-box"></div>
             </div>
-        </section>
 
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2>Skontaktuj się z nami</h2>
-                <div class="contact-wrapper">
-                    <form class="contact-form">
-                        <div class="form-group">
-                            <label for="name">Imię i nazwisko:</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Telefon:</label>
-                            <input type="tel" id="phone" name="phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Wiadomość:</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn">Wyślij</button>
-                    </form>
-                    <div class="contact-info">
-                        <h3>Dane kontaktowe</h3>
-                        <p>ul. Podróżnicza 123, 00-001 Warszawa</p>
-                        <p>+48 123 456 789</p>
-                        <p>kontakt@podroze.edu.pl</p>
-                    </div>
-                </div>
+            <div>
+                <h3 style="color: #ffb100; font-size: 0.9rem; margin-bottom: 10px; text-align: center;">KARTY STATYSTYK BOHATERA</h3>
+                <div id="stats-grid" class="stats-grid"></div>
             </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 Podróże po Świecie. Wszelkie prawa zastrzeżone.</p>
-            <nav>
-                <ul>
-                    <li><a href="#">Polityka prywatności</a></li>
-                    <li><a href="#">Warunki korzystania</a></li>
-                    <li><a href="#contact">Kontakt</a></li>
-                </ul>
-            </nav>
         </div>
-    </footer>
+
+        <!-- WIDOK 2: MISJE CODZIENNE I TABLICA -->
+        <div id="view-quests" class="view">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: #ffb100; font-size: 1rem;">TABLICA MISJI</h3>
+                <div style="display: flex; gap: 8px;">
+                    <button class="quest-btn" onclick="resetQuestProgress()" style="background: #373a46; border-color: #ff4b4b; color: #ff4b4b;">RESET ZADAŃ</button>
+                    <button class="quest-btn" onclick="switchSubview('DUNGEONS')" style="background: #ff4b4b;">DUNGEONY ⚔</button>
+                </div>
+            </div>
+
+            <div id="penalty-container"></div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="quest-btn" id="subtab-daily" onclick="setQuestViewMode('DAILY')" style="flex: 1; background: #0096ff;">CODZIENNE</button>
+                <button class="quest-btn" id="subtab-bonus" onclick="setQuestViewMode('BONUS')" style="flex: 1; background: #373a46;">BONUSOWE</button>
+            </div>
+
+            <div class="tabs-row" id="stat-tabs-container"></div>
+
+            <div class="table-card">
+                <div class="table-title">
+                    <span id="reset-timer-display">RESET DZIENNY: 23:59:59</span>
+                </div>
+                <div id="quests-list-container"></div>
+            </div>
+        </div>
+
+        <!-- WIDOK 3: ROAD OF -->
+        <div id="view-roadof" class="view">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <h3 style="color: #ffb100; font-size: 1rem;">ROAD OF INTERFACE</h3>
+            </div>
+            <div class="card" style="text-align: center; padding: 40px; color: #8c90a0;">
+                <p style="font-size: 0.9rem; color: #ffb100; margin-bottom: 8px;">[ ROAD OF - W BUDOWIE ]</p>
+                <p style="font-size: 0.8rem;">Tutaj na razie nic nie ma – funkcjonalność zostanie dodana później!</p>
+            </div>
+        </div>
+
+        <!-- WIDOK 4: SKLEP -->
+        <div id="view-shop" class="view">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="quest-btn" onclick="switchView('stats')">⬅ POWRÓT</button>
+                <h3 style="color: #ffb100; font-size: 1rem;">SKLEP SYSTEMOWY</h3>
+            </div>
+            <div class="card" style="text-align: center; padding: 40px; color: #8c90a0;">
+                <p style="font-size: 0.9rem; color: #ffb100; margin-bottom: 8px;">[ SKLEP - W BUDOWIE ]</p>
+                <p style="font-size: 0.8rem;">Tutaj na razie nic nie ma – funkcjonalność zostanie dodana później!</p>
+            </div>
+        </div>
+
+        <!-- WIDOK 5: DUNGEONY -->
+        <div id="view-dungeons" class="view">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="quest-btn" onclick="switchSubview('QUESTS')">⬅ POWRÓT</button>
+                <h3 style="color: #ffb100; font-size: 1rem;">WYBÓR DUNGEONU</h3>
+            </div>
+            <div id="dungeons-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
+
+        <!-- WIDOK 6: PAŃSTWA / REGIONY -->
+        <div id="view-countries" class="view">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="quest-btn" onclick="switchSubview('DUNGEONS')">⬅ POWRÓT</button>
+                <h3 style="color: #ffb100; font-size: 1rem;">WYBÓR PAŃSTWA</h3>
+            </div>
+            <div id="countries-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <!-- WIDOK 7: GÓRY W PAŃSTWIE -->
+        <div id="view-mountains" class="view">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="quest-btn" onclick="switchSubview('COUNTRIES')">⬅ POWRÓT</button>
+                <h3 id="mountain-country-title" style="color: #ffb100; font-size: 1rem;">GÓRY</h3>
+            </div>
+            <div id="mountains-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <!-- WIDOK 8: INTERFEJS KONKRETNEJ GÓRY -->
+        <div id="view-mountain-action" class="view">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="quest-btn" onclick="switchSubview('MOUNTAINS')">⬅ POWRÓT</button>
+                <h3 id="mountain-action-title" style="color: #ffb100; font-size: 1rem;">INTERFEJS GÓRY</h3>
+            </div>
+            <div class="card" style="text-align: center; padding: 40px; color: #8c90a0;">
+                <p style="font-size: 0.9rem; color: #ffb100; margin-bottom: 8px;">[ INTERFEJS W BUDOWIE ]</p>
+                <p style="font-size: 0.8rem;">Tutaj na razie nic nie ma – funkcjonalność zostanie dodana później!</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="dock">
+        <button class="dock-btn" onclick="switchView('stats')">
+            <span>⚙</span>
+            <span>STATUS</span>
+        </button>
+        <button class="dock-btn active" onclick="switchView('quests')">
+            <span>📋</span>
+            <span>MISJE</span>
+        </button>
+        <button class="dock-btn" onclick="switchView('roadof')">
+            <span>🛣️</span>
+            <span>ROAD OF</span>
+        </button>
+    </nav>
+
+    <div id="name-modal" class="modal">
+        <div class="modal-content">
+            <h4 style="color: #ffb100;">ZMIANA NAZWY GRACZA</h4>
+            <input type="text" id="modal-name-input" maxlength="15">
+            <div class="modal-btns">
+                <button class="btn btn-cancel" onclick="closeNameModal()">ANULUJ</button>
+                <button class="btn" onclick="savePlayerName()">ZATWIERDŹ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const statColors = {
+            "STR": "#ff4b4b",
+            "AGI": "#4bc285",
+            "DEX": "#a855f7",
+            "VIT": "#0096ff",
+            "INT": "#ffb100",
+            "FAI": "#ff7c43",
+            "NONE": "#8c90a0"
+        };
+
+        let appData = {
+            playerName: "HERO PLAYER",
+            playerLevel: 1,
+            playerXP: 0,
+            maxPlayerXP: 300,
+            gold: 0,
+            avatarDataUrl: null,
+            logsEnabled: false,
+            selectedStatTab: "ALL",
+            questViewMode: "DAILY",
+            currentSubview: "QUESTS",
+            selectedCountry: null,
+            selectedMountain: null,
+            penaltyLevel: 0,
+            penaltyEndTime: null,
+            systemMessages: [
+                "> System Interface Initialized.",
+                "> Daily Quests: Loaded.",
+                "> System Status: OPTIMAL"
+            ],
+            stats: [
+                { name: "STR", level: 1, xp: 0, max_xp: 100, color: "#ff4b4b", joker: "WARRIOR", art: "⚔️" },
+                { name: "AGI", level: 1, xp: 0, max_xp: 100, color: "#4bc285", joker: "RUNNER", art: "⚡" },
+                { name: "DEX", level: 1, xp: 0, max_xp: 100, color: "#a855f7", joker: "TRICKSTER", art: "🎭" },
+                { name: "VIT", level: 1, xp: 0, max_xp: 100, color: "#0096ff", joker: "GUARDIAN", art: "🛡️" },
+                { name: "INT", level: 1, xp: 0, max_xp: 100, color: "#ffb100", joker: "SCHOLAR", art: "🔮" },
+                { name: "FAI", level: 1, xp: 0, max_xp: 100, color: "#ff7c43", joker: "MYSTIC", art: "✨" }
+            ],
+            dailySets: [
+                [
+                    { id: 0, name: "Push-ups", base_target: 15, unit: "powt.", stat: "STR", base_reward: 20, done: false },
+                    { id: 1, name: "Pull-ups", base_target: 15, unit: "powt.", stat: "STR", base_reward: 20, done: false },
+                    { id: 2, name: "Dips", base_target: 15, unit: "powt.", stat: "STR", base_reward: 20, done: false },
+                ],
+                [
+                    { id: 3, name: "Plank", base_target: 15, unit: "powt.", stat: "VIT", base_reward: 20, done: false },
+                    { id: 4, name: "L-Sit", base_target: 15, unit: "powt.", stat: "VIT", base_reward: 20, done: false },
+                    { id: 5, name: "Sit-ups", base_target: 15, unit: "powt.", stat: "VIT", base_reward: 20, done: false },
+                ],
+                [
+                    { id: 6, name: "Rozciąganie 15m", base_target: 15, unit: "min", stat: "DEX", base_reward: 20, done: false },
+                    { id: 7, name: "Przysiady", base_target: 15, unit: "powt.", stat: "AGI", base_reward: 20, done: false },
+                    { id: 8, name: "Schody", base_target: 15, unit: "powt.", stat: "AGI", base_reward: 20, done: false },
+                ],
+                [
+                    { id: 9, name: "Modlitwa", base_target: 1, unit: "raz", stat: "FAI", base_reward: 20, done: false },
+                    { id: 10, name: "Medytacja 1m", base_target: 1, unit: "min", stat: "FAI", base_reward: 20, done: false },
+                    { id: 11, name: "Czytanie 10 stron", base_target: 10, unit: "stron", stat: "INT", base_reward: 20, done: false },
+                ]
+            ],
+            runningQuest: { id: 99, name: "Bieganie/Spacer", base_target_dist: 1, base_target_steps: 10000, unit_dist: "km", unit_steps: "kroków", stat: "AGI", base_reward: 20, done: false },
+            dailyQuests: [],
+            bonusQuests: [],
+            exerciseProgressiveQuests: {
+                "Push-ups": { stat: "STR", target: 100, unit: "powt.", icon: "💥" },
+                "Pull-ups": { stat: "STR", target: 100, unit: "powt.", icon: "🦾" },
+                "Dips": { stat: "STR", target: 100, unit: "powt.", icon: "⚡" },
+                "Plank": { stat: "VIT", target: 100, unit: "powt.", icon: "🛡️" },
+                "L-Sit": { stat: "VIT", target: 100, unit: "powt.", icon: "🔮" },
+                "Sit-ups": { stat: "VIT", target: 100, unit: "powt.", icon: "🔥" },
+                "Rozciąganie 15m": { stat: "DEX", target: 100, unit: "min", icon: "🌀" },
+                "Przysiady": { stat: "AGI", target: 100, unit: "powt.", icon: "🦿" },
+                "Schody": { stat: "AGI", target: 100, unit: "powt.", icon: "🚀" },
+                "Czytanie 10 stron": { stat: "INT", target: 10, unit: "stron", icon: "📜" },
+                "Bieganie/Spacer": { stat: "AGI", target: 1, unit: "km", icon: "👟" }
+            },
+            dungeons: [
+                { id: 1, name: "Mountains", rank: "E-RANK", req_lvl: 1, desc: "By coś osiągnąć trzeba się wspiąć na szczyt.", status: "AVAILABLE" },
+                { id: 2, name: "Loch Rangi B", rank: "B-RANK", req_lvl: 5, desc: "Wymaga wyszkolonego bohatera i wysokich statystyk.", status: "LOCKED" },
+                { id: 3, name: "Rajd na Bossa: Purpurowe Serce", rank: "S-RANK BOSS", req_lvl: 12, desc: "Nakłada debuff na połowę statystyk! Huge ryzyko, potężna nagroda.", status: "LOCKED" }
+            ],
+            mountainRegions: {
+                "Polska": { code: "PL", color: "#ff4b4b", mountains: [{name: "Łysa Góra", height: "595 m n.p.m.", diff: "BARDZO ŁATWA"}, {name: "Śnieżka", height: "1603 m n.p.m.", diff: "ŁATWA"}, {name: "Kasprowy Wierch", height: "1987 m n.p.m.", diff: "ŚREDNIA"}, {name: "Rysy", height: "2499 m n.p.m.", diff: "TRUDNA"}] },
+                "Czechy": { code: "CZ", color: "#0096ff", mountains: [{name: "Ještěd", height: "1012 m n.p.m.", diff: "BARDZO ŁATWA"}, {name: "Pradziad", height: "1491 m n.p.m.", diff: "ŁATWA"}, {name: "Śnieżka", height: "1603 m n.p.m.", diff: "ŚREDNIA"}] },
+                "Słowacja": { code: "SK", color: "#ff7c43", mountains: [{name: "Chopok", height: "2024 m n.p.m.", diff: "ŁATWA"}, {name: "Kriváň", height: "2495 m n.p.m.", diff: "ŚREDNIA"}, {name: "Łomnica", height: "2634 m n.p.m.", diff: "TRUDNA"}, {name: "Gerlach", height: "2655 m n.p.m.", diff: "EKSTREMALNA"}] },
+                "Niemcy": { code: "DE", color: "#ffb100", mountains: [{name: "Feldberg", height: "1493 m n.p.m.", diff: "ŁATWA"}, {name: "Watzmann", height: "2713 m n.p.m.", diff: "TRUDNA"}, {name: "Zugspitze", height: "2962 m n.p.m.", diff: "BARDZO TRUDNA"}] },
+                "Austria": { code: "AT", color: "#ff4b4b", mountains: [{name: "Schneeberg", height: "2076 m n.p.m.", diff: "ŚREDNIA"}, {name: "Dachstein", height: "2995 m n.p.m.", diff: "TRUDNA"}, {name: "Großglockner", height: "3798 m n.p.m.", diff: "EKSTREMALNA"}] },
+                "Włochy": { code: "IT", color: "#4bc285", mountains: [{name: "Wezuwiusz", height: "1281 m n.p.m.", diff: "ŁATWA"}, {name: "Tre Cime", height: "2999 m n.p.m.", diff: "ŚREDNIA"}, {name: "Etna", height: "3357 m n.p.m.", diff: "TRUDNA"}] },
+                "Francja": { code: "FR", color: "#a855f7", mountains: [{name: "Puy de Dôme", height: "1465 m n.p.m.", diff: "ŁATWA"}, {name: "Mont Blanc", height: "4807 m n.p.m.", diff: "EKSTREMALNA"}] },
+                "Szwajcaria": { code: "CH", color: "#ff7c43", mountains: [{name: "Pilatus", height: "2128 m n.p.m.", diff: "ŚREDNIA"}, {name: "Matterhorn", height: "4478 m n.p.m.", diff: "LEGENDARNA"}] }
+            }
+        };
+
+        function saveState() {
+            localStorage.setItem("solo_leveling_web", JSON.stringify(appData));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem("solo_leveling_web");
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    appData = { ...appData, ...parsed };
+                    
+                    const baseRegions = {
+                        "Polska": { code: "PL", color: "#ff4b4b" },
+                        "Czechy": { code: "CZ", color: "#0096ff" },
+                        "Słowacja": { code: "SK", color: "#ff7c43" },
+                        "Niemcy": { code: "DE", color: "#ffb100" },
+                        "Austria": { code: "AT", color: "#ff4b4b" },
+                        "Włochy": { code: "IT", color: "#4bc285" },
+                        "Francja": { code: "FR", color: "#a855f7" },
+                        "Szwajcaria": { code: "CH", color: "#ff7c43" }
+                    };
+                    for (let reg in baseRegions) {
+                        if (!appData.mountainRegions[reg]) {
+                            appData.mountainRegions[reg] = baseRegions[reg];
+                        } else {
+                            if (!appData.mountainRegions[reg].code) appData.mountainRegions[reg].code = baseRegions[reg].code;
+                            if (!appData.mountainRegions[reg].color) appData.mountainRegions[reg].color = baseRegions[reg].color;
+                        }
+                    }
+                } catch(e) {}
+            }
+            updateActiveDailyQuests();
+        }
+
+        function updateActiveDailyQuests() {
+            const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % appData.dailySets.length;
+            const activeSet = appData.dailySets[dayIndex];
+            appData.dailyQuests = activeSet.map(q => ({ ...q }));
+            appData.dailyQuests.push({ ...appData.runningQuest });
+
+            appData.bonusQuests = [];
+            appData.dailySets.forEach((s, idx) => {
+                if (idx !== dayIndex) {
+                    s.forEach(q => appData.bonusQuests.push({ ...q, id: q.id + 1000 }));
+                }
+            });
+            appData.bonusQuests.push({ id: 9999, name: "Zimny prysznic", base_target: 1, unit: "raz", stat: "NONE", base_reward: 0, reward_gold: 100, done: false });
+        }
+
+        function render() {
+            document.getElementById("player-name-display").textContent = appData.playerName;
+            document.getElementById("badge-level").textContent = `POZIOM ${appData.playerLevel}`;
+            document.getElementById("badge-gold").textContent = `${appData.gold} $`;
+            
+            const xpPercent = Math.min(100, (appData.playerXP / appData.maxPlayerXP) * 100);
+            document.getElementById("player-xp-fill").style.width = xpPercent + "%";
+            document.getElementById("player-xp-text").textContent = `${appData.playerXP}/${appData.maxPlayerXP} EXP`;
+
+            if (appData.avatarDataUrl) {
+                document.getElementById("avatar-img").src = appData.avatarDataUrl;
+                document.getElementById("avatar-img").style.display = "block";
+                document.getElementById("avatar-icon").style.display = "none";
+            }
+
+            renderLogs();
+            renderStatsCards();
+            renderStatTabs();
+            renderQuestsList();
+            updateResetTimer();
+        }
+
+        function renderLogs() {
+            const box = document.getElementById("logs-box");
+            box.innerHTML = "";
+            const keywords = ["AWANS", "ODBLOKOWANO", "UPDATE", "UKOŃCZONY", "KARA", "BONUS", "LEVEL UP"];
+            const filtered = appData.logsEnabled ? appData.systemMessages : appData.systemMessages.filter(m => keywords.some(kw => m.toUpperCase().includes(kw)));
+            
+            filtered.forEach((msg, idx) => {
+                const div = document.createElement("div");
+                div.className = "log-line" + (idx === filtered.length - 1 ? " important" : "");
+                div.textContent = msg;
+                box.appendChild(div);
+            });
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function toggleLogsFilter() {
+            appData.logsEnabled = !appData.logsEnabled;
+            document.getElementById("logs-filter-btn").textContent = appData.logsEnabled ? "Wszystkie" : "Ważne";
+            renderLogs();
+        }
+
+        function renderStatsCards() {
+            const grid = document.getElementById("stats-grid");
+            grid.innerHTML = "";
+            appData.stats.forEach(st => {
+                const card = document.createElement("div");
+                card.className = "stat-card";
+                card.style.borderColor = st.color;
+                
+                const xpRatio = Math.min(1, st.xp / st.max_xp) * 100;
+                card.innerHTML = `
+                    <div class="stat-header" style="background: ${st.color};">${st.joker}</div>
+                    <div class="stat-icon" style="border-color: ${st.color}; color: ${st.color};">${st.art}</div>
+                    <div style="font-size: 0.8rem; font-weight: bold;">${st.name}</div>
+                    <div class="stat-lvl">LVL ${st.level}</div>
+                    <div class="stat-xp-bar"><div class="stat-xp-fill" style="width: ${xpRatio}%; background: ${st.color};"></div></div>
+                    <div class="stat-xp-text">${st.xp}/${st.max_xp} EXP</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderStatTabs() {
+            const tabsContainer = document.getElementById("stat-tabs-container");
+            tabsContainer.innerHTML = "";
+            const tabs = ["ALL", "STR", "AGI", "DEX", "VIT", "INT", "FAI"];
+            tabs.forEach(tab => {
+                const btn = document.createElement("button");
+                btn.className = "tab-btn" + (appData.selectedStatTab === tab ? " active" : "");
+                btn.textContent = tab;
+                btn.onclick = () => { appData.selectedStatTab = tab; renderStatTabs(); renderQuestsList(); };
+                tabsContainer.appendChild(btn);
+            });
+        }
+
+        function setQuestViewMode(mode) {
+            appData.questViewMode = mode;
+            document.getElementById('subtab-daily').style.background = mode === 'DAILY' ? '#0096ff' : '#373a46';
+            document.getElementById('subtab-bonus').style.background = mode === 'BONUS' ? '#0096ff' : '#373a46';
+            renderQuestsList();
+        }
+
+        function renderQuestsList() {
+            const container = document.getElementById("quests-list-container");
+            container.innerHTML = "";
+
+            if (!appData.questViewMode) appData.questViewMode = 'DAILY';
+
+            if (appData.questViewMode === 'DAILY') {
+                const dailyFiltered = appData.dailyQuests.filter(q => appData.selectedStatTab === "ALL" || q.stat === appData.selectedStatTab);
+                if (dailyFiltered.length > 0) {
+                    const header = document.createElement("div");
+                    header.style.color = "#0096ff";
+                    header.style.fontWeight = "bold";
+                    header.style.fontSize = "0.85rem";
+                    header.style.margin = "10px 0 5px 0";
+                    header.textContent = "⚡ [ ZADANIA CODZIENNE ]";
+                    container.appendChild(header);
+
+                    dailyFiltered.forEach(q => {
+                        const item = document.createElement("div");
+                        item.className = "quest-item";
+                        item.innerHTML = `
+                            <div class="quest-info">
+                                <div class="quest-name">${q.name} [${q.stat}]</div>
+                                <div class="quest-desc">Nagroda: +${q.base_reward} EXP</div>
+                            </div>
+                            <button class="quest-btn ${q.done ? 'done' : ''}" onclick="completeDailyQuest(${q.id})">
+                                ${q.done ? 'ZROBIONE' : 'START'}
+                            </button>
+                        `;
+                        container.appendChild(item);
+                    });
+                }
+
+                const progFiltered = Object.entries(appData.exerciseProgressiveQuests).filter(([name, data]) => appData.selectedStatTab === "ALL" || data.stat === appData.selectedStatTab);
+                if (progFiltered.length > 0) {
+                    const header = document.createElement("div");
+                    header.style.color = "#ff4b4b";
+                    header.style.fontWeight = "bold";
+                    header.style.fontSize = "0.85rem";
+                    header.style.margin = "15px 0 5px 0";
+                    header.textContent = "🔥 [ PROGRES ĆWICZEŃ ]";
+                    container.appendChild(header);
+
+                    progFiltered.forEach(([exName, data]) => {
+                        const item = document.createElement("div");
+                        item.className = "quest-item";
+                        item.style.borderColor = "#ff4b4b";
+                        item.innerHTML = `
+                            <div class="quest-info">
+                                <div class="quest-name">${data.icon} ${exName} [${data.stat}]</div>
+                                <div class="quest-desc">Cel: ${data.target} ${data.unit}</div>
+                            </div>
+                            <button class="quest-btn" onclick="completeProgressiveQuest('${exName}')" style="background: #ff4b4b;">WYKONAJ</button>
+                        `;
+                        container.appendChild(item);
+                    });
+                }
+            } else if (appData.questViewMode === 'BONUS') {
+                const bonusFiltered = appData.bonusQuests.filter(q => appData.selectedStatTab === "ALL" || q.stat === appData.selectedStatTab || q.stat === "NONE");
+                if (bonusFiltered.length > 0) {
+                    const header = document.createElement("div");
+                    header.style.color = "#ffb100";
+                    header.style.fontWeight = "bold";
+                    header.style.fontSize = "0.85rem";
+                    header.style.margin = "10px 0 5px 0";
+                    header.textContent = "🌟 [ MISJE BONUSOWE POZA ROTACJĄ ]";
+                    container.appendChild(header);
+
+                    bonusFiltered.forEach(q => {
+                        const item = document.createElement("div");
+                        item.className = "quest-item";
+                        const statColor = statColors[q.stat] || "#ffb100";
+                        item.style.borderLeftColor = statColor;
+                        
+                        let rewardText = q.base_reward ? `+${q.base_reward} EXP` : '';
+                        if (q.reward_gold) rewardText += (rewardText ? `, ` : '') + `+${q.reward_gold} $`;
+                        
+                        item.innerHTML = `
+                            <div class="quest-info">
+                                <div class="quest-name" style="color: ${statColor};">${q.name} ${q.stat !== "NONE" ? '<span style="color: #8c90a0; font-size: 0.75rem;">[' + q.stat + ']</span>' : ''}</div>
+                                <div class="quest-desc">Nagroda: ${rewardText}</div>
+                            </div>
+                            <button class="quest-btn ${q.done ? 'done' : ''}" onclick="completeBonusQuest(${q.id})" style="background: ${q.done ? '#4bc285' : statColor}; color: #0f1015;">
+                                ${q.done ? 'ZROBIONE' : 'START'}
+                            </button>
+                        `;
+                        container.appendChild(item);
+                    });
+                } else {
+                    const info = document.createElement("div");
+                    info.style.color = "#8c90a0";
+                    info.style.textAlign = "center";
+                    info.style.padding = "20px";
+                    info.textContent = "Brak dostępnych misji bonusowych w tej kategorii.";
+                    container.appendChild(info);
+                }
+            }
+        }
+
+        function addStatXP(statName, amount) {
+            const stat = appData.stats.find(s => s.name === statName);
+            if (stat) {
+                stat.xp += amount;
+                appData.systemMessages.push(`> +${amount} EXP przypisane do ${stat.name}.`);
+                while (stat.xp >= stat.max_xp) {
+                    stat.xp -= stat.max_xp;
+                    stat.level += 1;
+                    stat.max_xp = 100 + (50 * (stat.level - 1));
+                    appData.systemMessages.push(`> [AWANS STATYSTYKI] ${stat.name} osiągnął Poziom ${stat.level}!`);
+                }
+                addPlayerXP(Math.floor(amount * 0.5));
+            }
+        }
+
+        function addPlayerXP(amount) {
+            appData.playerXP += amount;
+            while (appData.playerXP >= appData.maxPlayerXP) {
+                appData.playerXP -= appData.maxPlayerXP;
+                appData.playerLevel += 1;
+                appData.maxPlayerXP = Math.floor(appData.maxPlayerXP * 1.2);
+                appData.systemMessages.push(`> [AWANS POSTACI!] Osiągnięto Poziom ${appData.playerLevel}!`);
+            }
+        }
+
+        function completeDailyQuest(id) {
+            const q = appData.dailyQuests.find(item => item.id === id);
+            if (q && !q.done) {
+                q.done = true;
+                addStatXP(q.stat, q.base_reward);
+                appData.systemMessages.push(`> Ukończono misję: ${q.name}!`);
+                saveState();
+                render();
+            }
+        }
+
+        function completeBonusQuest(id) {
+            const q = appData.bonusQuests.find(item => item.id === id);
+            if (q && !q.done) {
+                q.done = true;
+                if (q.stat && q.stat !== "NONE") {
+                    addStatXP(q.stat, q.base_reward);
+                }
+                if (q.reward_gold) {
+                    appData.gold += q.reward_gold;
+                }
+                appData.systemMessages.push(`> Ukończono misję bonusową: ${q.name}!`);
+                saveState();
+                render();
+            }
+        }
+
+        function completeProgressiveQuest(exName) {
+            const prog = appData.exerciseProgressiveQuests[exName];
+            if (prog) {
+                addStatXP(prog.stat, 30);
+                prog.target += (exName === "Bieganie/Spacer" ? 1 : 10);
+                appData.systemMessages.push(`> Wykonano ćwiczenie ${exName}! Zwiększono cel.`);
+                saveState();
+                render();
+            }
+        }
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+
+            if (viewName === 'stats') {
+                document.getElementById('view-stats').classList.add('active');
+                document.querySelectorAll('.dock-btn')[0].classList.add('active');
+            } else if (viewName === 'quests') {
+                document.getElementById('view-quests').classList.add('active');
+                document.querySelectorAll('.dock-btn')[1].classList.add('active');
+            } else if (viewName === 'roadof') {
+                document.getElementById('view-roadof').classList.add('active');
+                document.querySelectorAll('.dock-btn')[2].classList.add('active');
+            } else if (viewName === 'shop') {
+                document.getElementById('view-shop').classList.add('active');
+            }
+        }
+
+        function switchSubview(sub) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            if (sub === 'QUESTS') {
+                document.getElementById('view-quests').classList.add('active');
+            } else if (sub === 'DUNGEONS') {
+                document.getElementById('view-dungeons').classList.add('active');
+                renderDungeonsList();
+            } else if (sub === 'COUNTRIES') {
+                document.getElementById('view-countries').classList.add('active');
+                renderCountriesList();
+            } else if (sub === 'MOUNTAINS') {
+                document.getElementById('view-mountains').classList.add('active');
+                renderMountainsList();
+            } else if (sub === 'MOUNTAIN_ACTION') {
+                document.getElementById('view-mountain-action').classList.add('active');
+            }
+        }
+
+        function renderDungeonsList() {
+            const list = document.getElementById('dungeons-list');
+            list.innerHTML = "";
+            appData.dungeons.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.borderColor = d.status === 'AVAILABLE' ? '#4bc285' : '#ff4b4b';
+                card.innerHTML = `
+                    <div style="font-weight: bold; color: #ffb100;">${d.name} [${d.rank}]</div>
+                    <div style="font-size: 0.75rem; color: #8c90a0; margin: 5px 0;">${d.desc}</div>
+                    <button class="quest-btn" onclick="openDungeon(${d.id})" style="margin-top: 5px;">WEJDŹ</button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function openDungeon(id) {
+            if (id === 1) {
+                switchSubview('COUNTRIES');
+            } else {
+                alert("Dungeon zablokowany! Wymagany wyższy poziom.");
+            }
+        }
+
+        function renderCountriesList() {
+            const list = document.getElementById('countries-list');
+            list.innerHTML = "";
+            Object.keys(appData.mountainRegions).forEach(regName => {
+                const reg = appData.mountainRegions[regName];
+                const codeLower = reg.code.toLowerCase();
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.borderColor = reg.color;
+                card.style.cursor = 'pointer';
+                card.onclick = () => selectCountry(regName);
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="font-weight: bold; color: ${reg.color}; font-size: 1.05rem; display: flex; align-items: center; gap: 12px;">
+                            <img src="https://flagcdn.com/w40/${codeLower}.png" style="width: 28px; height: 20px; object-fit: cover; border-radius: 3px; border: 1px solid #ffffff;" alt="${reg.code}">
+                            <span style="background: ${reg.color}; color: #0f1015; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; font-weight: bold;">${reg.code}</span>
+                            <span>${regName}</span>
+                        </div>
+                        <span style="font-size: 0.75rem; color: #ffb100;">WEJDŹ ➔</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function selectCountry(regName) {
+            appData.selectedCountry = regName;
+            switchSubview('MOUNTAINS');
+        }
+
+        function renderMountainsList() {
+            const reg = appData.mountainRegions[appData.selectedCountry];
+            document.getElementById('mountain-country-title').textContent = `GÓRY: ${appData.selectedCountry} [${reg.code}]`;
+            const list = document.getElementById('mountains-list');
+            list.innerHTML = "";
+            reg.mountains.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.borderColor = reg.color;
+                card.style.cursor = 'pointer';
+                card.onclick = () => selectMountain(m.name);
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: bold; color: #ffffff;">⛰️ ${m.name} (${m.height})</span>
+                        <span style="color: #ffb100; font-size: 0.8rem; font-weight: bold;">${m.diff}</span>
+                    </div>
+                    <div style="font-size: 0.70rem; color: #8c90a0; margin-top: 5px;">Kliknij, aby wejść do interfejsu góry</div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function selectMountain(mountainName) {
+            appData.selectedMountain = mountainName;
+            document.getElementById('mountain-action-title').textContent = `GÓRA: ${mountainName}`;
+            switchSubview('MOUNTAIN_ACTION');
+        }
+
+        function updateResetTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const diff = tomorrow - now;
+            const hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+            const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+            const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+            document.getElementById("reset-timer-display").textContent = `RESET DZIENNY: ${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateResetTimer, 1000);
+
+        function triggerAvatarUpload() {
+            document.getElementById("avatar-input").click();
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    appData.avatarDataUrl = e.target.result;
+                    appData.systemMessages.push("> Zaktualizowano awatar gracza.");
+                    saveState();
+                    render();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function openNameModal() {
+            document.getElementById("modal-name-input").value = appData.playerName;
+            document.getElementById("name-modal").style.display = "flex";
+        }
+
+        function closeNameModal() {
+            document.getElementById("name-modal").style.display = "none";
+        }
+
+        function savePlayerName() {
+            const val = document.getElementById("modal-name-input").value.trim();
+            if (val) {
+                appData.playerName = val.substring(0, 15);
+                appData.systemMessages.push(`> Zaktualizowano nazwę: ${appData.playerName}`);
+                saveState();
+                render();
+                closeNameModal();
+            }
+        }
+
+        function resetQuestProgress() {
+            if (confirm("Czy na pewno chcesz zresetować postęp zadań?")) {
+                appData.dailyQuests.forEach(q => q.done = false);
+                appData.bonusQuests.forEach(q => q.done = false);
+                appData.systemMessages.push("> [SYSTEM RESET] Postęp zadań został zresetowany!");
+                saveState();
+                render();
+            }
+        }
+
+        loadState();
+        render();
+    </script>
 </body>
 </html>
